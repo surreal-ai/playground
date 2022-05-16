@@ -2,6 +2,10 @@
   "name": "surreal-engine-playground",
   "version": "0.0.1",
   "private": true,
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:surreal-ai/playground.git"
+  },
   "scripts": {
     "docusaurus": "docusaurus",
     "start": "docusaurus start --port 5050",
