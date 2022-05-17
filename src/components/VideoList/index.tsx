@@ -4,6 +4,7 @@ import TokenStateMessage from '@site/src/components/TokenStateMessage';
 import { useLocalStorageState } from 'ahooks';
 import api from '@site/src/api';
 import { VideoListItem } from '@site/src/api/engine';
+import BrowserOnly from '@docusaurus/BrowserOnly';
 
 function VideoList() {
   const [token] = useLocalStorageState<string>('se-token', { defaultValue: '' });
@@ -42,4 +43,8 @@ function VideoList() {
   );
 }
 
-export default VideoList;
+export default () => (
+  <BrowserOnly>
+    {() => <VideoList />}
+  </BrowserOnly>
+);

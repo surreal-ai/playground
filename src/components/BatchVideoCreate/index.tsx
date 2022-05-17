@@ -4,6 +4,7 @@ import React from 'react';
 import TokenStateMessage from '@site/src/components/TokenStateMessage';
 import api from '@site/src/api';
 import * as XLSX from 'xlsx';
+import BrowserOnly from '@docusaurus/BrowserOnly';
 
 interface GenerateData {
   pose_id: string;
@@ -53,7 +54,7 @@ function BatchVideoCreate() {
           if (stop) {
             break;
           }
-          setProgress(Math.floor((i + 1) / generateData?.length * 100));
+          setProgress(Math.floor((i) / generateData?.length * 100));
           const item = generateData[i];
           try {
             await postRowDataToGenerateVideo(item);
@@ -63,6 +64,7 @@ function BatchVideoCreate() {
             fail++;
           }
         }
+        setProgress(100);
         complete = true;
         Message.success(`Submit success: ${success}, fail: ${fail}`);
         setStartGenerate(false);
@@ -165,4 +167,8 @@ const postRowDataToGenerateVideo = async (data: GenerateData) => {
   return videoResult;
 }
 
-export default BatchVideoCreate;
+export default () => (
+  <BrowserOnly>
+    {() => <BatchVideoCreate />}
+  </BrowserOnly>
+);
