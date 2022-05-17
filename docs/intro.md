@@ -2,9 +2,10 @@
 sidebar_position: 1
 ---
 
-# Tutorial Intro
-
+# Playground Intro
 
 ## Getting Started
 
-quickly to start
+* get token to start
+* generate video
+* display your video list

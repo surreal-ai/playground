@@ -36,7 +36,7 @@ function VideoList() {
         >
           <Table.Column title="Id" dataIndex="video_id" width={160} />
           <Table.Column title="Status" dataIndex="status" width={100} />
-          <Table.Column title="Video" dataIndex="video_url"/>
+          <Table.Column title="Video" dataIndex="video_url" cell={(value) => <a href={value} target="_blank">{value}</a>} />
         </Table>
       </div>
     </Box>

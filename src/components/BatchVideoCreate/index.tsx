@@ -133,7 +133,7 @@ function BatchVideoCreate() {
           type="primary"
           disabled={!token}
           onClick={handleSubmit}
-        >To Generate Video</Button>
+        >Generate Video</Button>
       </div>
       <div>
         <Dialog v2

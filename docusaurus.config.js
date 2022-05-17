@@ -7,7 +7,7 @@ const darkCodeTheme = require('prism-react-renderer/themes/dracula');
 /** @type {import('@docusaurus/types').Config} */
 const config = {
   title: 'Surreal Engine Playground',
-  tagline: 'fast, simple, and powerful, quickly start with Surreal Engine',
+  tagline: 'Enjoy fast, simple and powerful AI content generation abilities.',
   url: 'https://surreal-ai.github.io/playground',
   baseUrl: '/playground/',
   onBrokenLinks: 'throw',
