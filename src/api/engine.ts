@@ -26,3 +26,14 @@ interface VideoGenerateResult {
 export function videoGenerate(params: VideoGenerateParams): Promise<VideoGenerateResult> {
   return request.post('/v1/a2v/video.generate', params);
 }
+
+export interface VideoListItem {
+  video_id: string;
+  status: string;
+  video_url: string;
+  preview_url: string;
+}
+
+export function getVideoList(): Promise<VideoListItem[]> {
+  return request.get('/v1/a2v/video.list');
+}

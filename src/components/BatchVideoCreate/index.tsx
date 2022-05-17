@@ -1,4 +1,4 @@
-import { Box, Button, Icon, Message, Upload } from '@alifd/next';
+import { Box, Button, Dialog, Icon, Message, Progress, Upload } from '@alifd/next';
 import { useLocalStorageState } from 'ahooks';
 import React from 'react';
 import TokenStateMessage from '@site/src/components/TokenStateMessage';
@@ -15,6 +15,8 @@ function BatchVideoCreate() {
   const [token] = useLocalStorageState<string>('se-token', { defaultValue: '' });
   const [loading, setLoading] = React.useState<boolean>(false);
   const [generateData, setGenerateData] = React.useState<GenerateData[] | null>(null);
+  const [startGenerate, setStartGenerate] = React.useState<boolean>(false);
+  const [progress, setProgress] = React.useState<number>(0);
 
   const handleFileParse = React.useCallback(async (file: File) => {
     setLoading(true);
@@ -39,8 +41,48 @@ function BatchVideoCreate() {
     }
   }, []);
 
-  const handleFileSelect = React.useCallback((file) => {
-    handleFileParse(file.originFileObj);
+  React.useEffect(() => {
+    if (startGenerate) {
+      let stop = false;
+      let success = 0;
+      let fail = 0;
+      let complete = false;
+
+      (async () => {
+        for (let i = 0; i < generateData?.length; i++) {
+          if (stop) {
+            break;
+          }
+          setProgress(Math.floor((i + 1) / generateData?.length * 100));
+          const item = generateData[i];
+          try {
+            await postRowDataToGenerateVideo(item);
+            success++;
+          } catch (e) {
+            Message.error(`Video ${i + 1} submit error: ` + e.message);
+            fail++;
+          }
+        }
+        complete = true;
+        Message.success(`Submit success: ${success}, fail: ${fail}`);
+        setStartGenerate(false);
+      })();
+
+      return () => {
+        stop = true;
+        if (!complete) {
+          Message.warning('Submit canceled');
+        }
+      }
+    }
+  }, [generateData, startGenerate]);
+
+  const handleFileSelect = React.useCallback((files: any[]) => {
+    if(files.length > 0) {
+      handleFileParse(files[0].originFileObj);
+    } else {
+      setGenerateData(null);
+    }
     return true;
   },[handleFileParse]);
 
@@ -49,8 +91,8 @@ function BatchVideoCreate() {
       Message.error('Please select file first');
       return;
     }
-    await postRowDataToGenerateVideo(generateData[0]);
-    Message.success('Success');
+
+    setStartGenerate(true);
   }, [loading, generateData]);
 
   return (
@@ -60,8 +102,8 @@ function BatchVideoCreate() {
         listType="text"
         accept=".xlsx, .xls, .csv"
         autoUpload={false}
+        onChange={handleFileSelect}
         limit={1}
-        afterSelect={handleFileSelect}
       >
         <div className="next-upload-drag">
           <p className="next-upload-drag-icon">
@@ -90,6 +132,24 @@ function BatchVideoCreate() {
           disabled={!token}
           onClick={handleSubmit}
         >To Generate Video</Button>
+      </div>
+      <div>
+        <Dialog v2
+          title="Video Generate Data Submit"
+          visible={startGenerate}
+          footerActions={['cancel']}
+          cancelProps={{ children: 'Cancel' }}
+          onClose={() => {
+            setStartGenerate(false);
+          }}
+        >
+          <Box>
+            <div>Data Submiting, close this dialog will stop submit</div>
+            <div>
+              <Progress percent={progress} />
+            </div>
+          </Box>
+        </Dialog>
       </div>
     </Box>
   );
