@@ -6,6 +6,6 @@ sidebar_position: 1
 
 ## Getting Started
 
-* get token to start
+* provide token to start
 * generate video
 * display your video list

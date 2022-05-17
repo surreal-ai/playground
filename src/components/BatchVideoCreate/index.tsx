@@ -106,6 +106,7 @@ function BatchVideoCreate() {
         autoUpload={false}
         onChange={handleFileSelect}
         limit={1}
+        disabled={!token}
       >
         <div className="next-upload-drag">
           <p className="next-upload-drag-icon">

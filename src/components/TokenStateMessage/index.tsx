@@ -7,7 +7,7 @@ function TokenStateMessage() {
 
   return (
     !token ? (
-      <Message type="error" title="Please get token and save first" />
+      <Message type="error" title={<div>Please <a href={'get-token'}>get token and save</a> first</div>} />
     ) : null
   );
 }
