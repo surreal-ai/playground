@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Button, Checkbox, Input, Message } from '@alifd/next';
+import { Box, Button, Input, Message } from '@alifd/next';
 import { useLocalStorageState } from 'ahooks';
 
 function TokenInput() {
@@ -9,7 +9,7 @@ function TokenInput() {
   const handleClick = React.useCallback(() => {
     Message.success('token saved');
     setToken(inputValue);
-  }, [inputValue]);
+  }, [inputValue, setToken]);
 
   return (
     <Box direction="row" spacing={12}>

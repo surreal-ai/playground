@@ -1,5 +1,5 @@
-import axios from "axios";
-import { inject } from "./util";
+import axios from 'axios';
+import { inject } from './util';
 
 
 const request = axios.create({

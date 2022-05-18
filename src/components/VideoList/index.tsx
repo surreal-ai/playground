@@ -16,7 +16,7 @@ function VideoList() {
       setLoading(true);
       api.engine.getVideoList().then(res => {
         setVideoListData(res.reverse());
-      }).catch((error)=>{
+      }).catch((error) => {
         Message.error(error?.message || 'get video list error');
       }).finally(() => {
         setLoading(false);
@@ -36,7 +36,7 @@ function VideoList() {
         >
           <Table.Column title="Id" dataIndex="video_id" width={160} />
           <Table.Column title="Status" dataIndex="status" width={100} />
-          <Table.Column title="Video" dataIndex="video_url" cell={(value) => <a href={value} target="_blank">{value}</a>} />
+          <Table.Column title="Video" dataIndex="video_url" cell={(value) => <a href={value} target="_blank" rel="noreferrer">{value}</a>} />
         </Table>
       </div>
     </Box>

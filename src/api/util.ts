@@ -53,21 +53,24 @@ export class ApiError extends Error {
 
 export function inject(axios: AxiosInstance) {
   // Add a request interceptor
-  axios.interceptors.request.use(function (config) {
-    let token = '';
-    try {
-      token = JSON.parse(localStorage.getItem('se-token'));
-    } catch (e) {
-      // ignore
-    }
+  axios.interceptors.request.use(
+    (config) => {
+      let token = '';
+      try {
+        token = JSON.parse(localStorage.getItem('se-token'));
+      } catch (err) {
+        // ignore
+      }
 
-    if (token) {
-      config.headers['Authorization'] = `Bearer ${token}`;
-    }
-    return config;
-  }, function (error) {
-    return Promise.reject(error);
-  });
+      if (token) {
+        if (!config.headers) { config.headers = {}; }
+        config.headers.Authorization = `Bearer ${token}`;
+      }
+      return config;
+    },
+    (error) => {
+      return Promise.reject(error);
+    });
 
   // Add a response interceptor
   axios.interceptors.response.use(

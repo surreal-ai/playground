@@ -6,6 +6,16 @@ import api from '@site/src/api';
 import * as XLSX from 'xlsx';
 import BrowserOnly from '@docusaurus/BrowserOnly';
 
+const postRowDataToGenerateVideo = async (data: GenerateData) => {
+  const { text, voice_name, pose_id } = data;
+  const audioResult = await api.engine.voiceGenerate({ text, voice_name });
+  const videoResult = await api.engine.videoGenerate({
+    audio_url: audioResult.url,
+    pose_id,
+  });
+  return videoResult;
+};
+
 interface GenerateData {
   pose_id: string;
   voice_name: string;
@@ -28,15 +38,15 @@ function BatchVideoCreate() {
       const sheetData = XLSX.utils.sheet_to_json<GenerateData>(sheet);
       const vaildSheetData = sheetData.filter((item) => {
         return item.pose_id && item.voice_name && item.text;
-      })
-      if(vaildSheetData.length > 0) {
+      });
+      if (vaildSheetData.length > 0) {
         setGenerateData(vaildSheetData);
         Message.success('File parse success');
       } else {
         throw new Error('No vaild data');
       }
-    } catch(e) {
-      Message.error((e as Error).message);
+    } catch (err) {
+      Message.error((err as Error).message);
     } finally {
       setLoading(false);
     }
@@ -59,8 +69,8 @@ function BatchVideoCreate() {
           try {
             await postRowDataToGenerateVideo(item);
             success++;
-          } catch (e) {
-            Message.error(`Video ${i + 1} submit error: ` + e.message);
+          } catch (err) {
+            Message.error(`Video ${i + 1} submit error: ${err.message}`);
             fail++;
           }
         }
@@ -75,18 +85,18 @@ function BatchVideoCreate() {
         if (!complete) {
           Message.warning('Submit canceled');
         }
-      }
+      };
     }
   }, [generateData, startGenerate]);
 
   const handleFileSelect = React.useCallback((files: any[]) => {
-    if(files.length > 0) {
+    if (files.length > 0) {
       handleFileParse(files[0].originFileObj);
     } else {
       setGenerateData(null);
     }
     return true;
-  },[handleFileParse]);
+  }, [handleFileParse]);
 
   const handleSubmit = React.useCallback(async () => {
     if (loading || !generateData) {
@@ -121,7 +131,7 @@ function BatchVideoCreate() {
       {
         loading ? (
           <Message type="loading" title="waiting file parse" />
-        ): null
+        ) : null
       }
       {
         (!loading && generateData?.length) ? (
@@ -137,7 +147,8 @@ function BatchVideoCreate() {
         >Generate Video</Button>
       </div>
       <div>
-        <Dialog v2
+        <Dialog
+          v2
           title="Video Generate Data Submit"
           visible={startGenerate}
           footerActions={['cancel']}
@@ -156,16 +167,6 @@ function BatchVideoCreate() {
       </div>
     </Box>
   );
-}
-
-const postRowDataToGenerateVideo = async (data: GenerateData) => {
-  const { text, voice_name, pose_id } = data;
-  const audioResult = await api.engine.voiceGenerate({ text, voice_name });
-  const videoResult = await api.engine.videoGenerate({
-    audio_url: audioResult.url,
-    pose_id,
-  });
-  return videoResult;
 }
 
 export default () => (
