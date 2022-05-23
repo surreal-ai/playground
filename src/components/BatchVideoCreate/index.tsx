@@ -6,21 +6,22 @@ import api from '@site/src/api';
 import * as XLSX from 'xlsx';
 import BrowserOnly from '@docusaurus/BrowserOnly';
 
+interface GenerateData {
+  pose_id: string;
+  voice_name: string;
+  text: string;
+  audio_url?: string;
+}
+
 const postRowDataToGenerateVideo = async (data: GenerateData) => {
   const { text, voice_name, pose_id } = data;
-  const audioResult = await api.engine.voiceGenerate({ text, voice_name });
+  const audioResult = data.audio_url ? { url: data.audio_url } : await api.engine.voiceGenerate({ text, voice_name });
   const videoResult = await api.engine.videoGenerate({
     audio_url: audioResult.url,
     pose_id,
   });
   return videoResult;
 };
-
-interface GenerateData {
-  pose_id: string;
-  voice_name: string;
-  text: string;
-}
 
 function BatchVideoCreate() {
   const [token] = useLocalStorageState<string>('se-token', { defaultValue: '' });
@@ -37,7 +38,7 @@ function BatchVideoCreate() {
       const sheet = workbook.Sheets[workbook.SheetNames[0]];
       const sheetData = XLSX.utils.sheet_to_json<GenerateData>(sheet);
       const vaildSheetData = sheetData.filter((item) => {
-        return item.pose_id && item.voice_name && item.text;
+        return item.pose_id && (item.audio_url || (item.voice_name && item.text));
       });
       if (vaildSheetData.length > 0) {
         setGenerateData(vaildSheetData);
@@ -74,10 +75,21 @@ function BatchVideoCreate() {
             fail++;
           }
         }
-        setProgress(100);
         complete = true;
-        Message.success(`Submit success: ${success}, fail: ${fail}`);
+        setProgress(100);
         setStartGenerate(false);
+
+        if(stop) return;
+        if(fail === 0) {
+          // all success
+          Message.success(`Submit success: ${success} job`);
+        } else if(success === 0) {
+          // all fail
+          Message.error(`Submit failed: ${fail} job`);
+        } else {
+          // some success, some fail
+          Message.warning(`Submit success: ${success} job, but fail: ${fail} job`);
+        }
       })();
 
       return () => {
